@@ -38,14 +38,6 @@ bool app_init( App* app )
     app->imageWidth = UINT32_MAX;
     app->imageHeight = UINT32_MAX;
     
-    app_message_open(
-        app_message_inbox_size_maximum(),
-        app_message_outbox_size_maximum()
-    );
-    
-    app_message_set_context( app );
-    app_message_register_inbox_received( message_received_callback );
-    
     GUARD( app->window = window_create(), return false );
     window_set_user_data( app->window, app );
     window_set_window_handlers( app->window, (WindowHandlers){
@@ -57,12 +49,21 @@ bool app_init( App* app )
     
     window_stack_push( app->window, false );
     
+    app_message_set_context( app );
+    app_message_register_inbox_received( message_received_callback );
+    
+    app_message_open(
+        app_message_inbox_size_maximum(),
+        app_message_outbox_size_maximum()
+    );
+    
     return true;
 }
 
 void app_deinit( App* app )
 {
     lmb_reset( &app->imageDataBuffer );
+    window_destroy( app->window );
 }
 
 void app_init_layout( App* app )

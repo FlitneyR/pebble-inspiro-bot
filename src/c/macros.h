@@ -2,10 +2,12 @@
 
 // crash trap
 char* const __s_alwaysNull;
-#define TRAP (*__s_alwaysNull = 0)
+// #define TRAP (*__s_alwaysNull = 0)
 
 // no trap
-//#define TRAP
+#ifndef TRAP
+#define TRAP
+#endif
 
 #define GUARD( cond, ... ) \
     if ( !( cond ) ) { \

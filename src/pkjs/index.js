@@ -1,14 +1,15 @@
 
 Pebble.addEventListener( 'ready', function() {
-    console.log( 'JSReady' );
-    var dict = { 'JSReady': true };
-    Pebble.sendAppMessage( dict, function() {}, function( e ) {} );
+    setTimeout( () => {
+        console.log( 'JSReady' );
+        var dict = { 'JSReady': true };
+        Pebble.sendAppMessage( dict, function( e ) {}, function( e ) {} );
+    }, 3000 );
 } );
 
 Pebble.addEventListener( 'appmessage', function( e ) {
-    console.log( 'Received message: ' + e );
-    
     var dict = e.payload;
+    console.log( 'Received message: ' + dict );
     
     if ( "RequestNewImage" in dict )
     {
