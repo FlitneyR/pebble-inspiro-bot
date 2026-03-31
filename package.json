@@ -1,0 +1,32 @@
+{
+    "author": "robert.ogflitney@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "inspiro-bot",
+    "pebble": {
+        "displayName": "inspiro-bot",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "ImageDataSize",
+            "ImageDataPart",
+            "BitmapWidth",
+            "BitmapHeight",
+            "RequestNewImage",
+            "JSReady"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "basalt",
+            "emery"
+        ],
+        "uuid": "6e1a3c0d-b2c8-4ca6-ab6a-90118fe02aef",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
