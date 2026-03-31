@@ -2,6 +2,9 @@
 #include "src/c/app.h"
 #include "src/c/long_message_buffer.h"
 
+#define APP_MAX_OUTPUT_MESSAGE 1024
+#define APP_MAX_INPUT_MESSAGE 8000
+
 struct App
 {
     Window* window;

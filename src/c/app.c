@@ -51,11 +51,17 @@ bool app_init( App* app )
     
     app_message_set_context( app );
     app_message_register_inbox_received( message_received_callback );
-    
-    app_message_open(
-        app_message_inbox_size_maximum(),
-        app_message_outbox_size_maximum()
-    );
+   
+    {
+        const AppMessageResult result = app_message_open(
+            APP_MAX_INPUT_MESSAGE,
+            APP_MAX_OUTPUT_MESSAGE
+        );
+        
+        if ( result != APP_MSG_OK )
+            APP_LOG( APP_LOG_LEVEL_ERROR, "result = %d", (int)result );
+        GUARD( result == APP_MSG_OK, return false );
+    }
     
     return true;
 }
@@ -88,27 +94,19 @@ void app_on_receive_message( App* app, DictionaryIterator* message )
     APP_LOG( APP_LOG_LEVEL_INFO, "Received message of %d bytes", dict_size( message ) );
     GUARD( app && message, return );
     
-    if ( dict_find( message, MESSAGE_KEY_JSReady ) )
+    if ( dict_find( message, MESSAGE_KEY_JS_READY ) )
         app_request_new_image( app );
 
-    APP_LOG( APP_LOG_LEVEL_INFO, "" );
-
-    const Tuple* const long_message_size = dict_find( message, MESSAGE_KEY_ImageDataSize );
+    const Tuple* const long_message_size = dict_find( message, MESSAGE_KEY_IMAGE_DATA_SIZE );
     if ( long_message_size )
         lmb_prepare( &app->imageDataBuffer, long_message_size->value->uint32 );
 
-    APP_LOG( APP_LOG_LEVEL_INFO, "" );
-
-    const Tuple* const long_message_part = dict_find( message, MESSAGE_KEY_ImageDataPart );
+    const Tuple* const long_message_part = dict_find( message, MESSAGE_KEY_IMAGE_DATA_CHUNK );
     if ( long_message_part )
         lmb_append_message_part( &app->imageDataBuffer, long_message_part->value->data, long_message_part->length );
 
-    APP_LOG( APP_LOG_LEVEL_INFO, "" );
-
-    const Tuple* const bitmap_width = dict_find( message, MESSAGE_KEY_BitmapWidth );
-    const Tuple* const bitmap_height = dict_find( message, MESSAGE_KEY_BitmapHeight );
-
-    APP_LOG( APP_LOG_LEVEL_INFO, "" );
+    const Tuple* const bitmap_width = dict_find( message, MESSAGE_KEY_IMAGE_WIDTH );
+    const Tuple* const bitmap_height = dict_find( message, MESSAGE_KEY_IMAGE_HEIGHT );
 
     if ( bitmap_width || bitmap_height )
     {
@@ -116,8 +114,6 @@ void app_on_receive_message( App* app, DictionaryIterator* message )
         GUARD( bitmap_height );
         app_set_bitmap_dimensions( app, bitmap_width->value->uint32, bitmap_height->value->uint32 );
     }
-
-    APP_LOG( APP_LOG_LEVEL_INFO, "" );
 
     if ( app_is_new_image_ready( app ) )
     {
@@ -161,21 +157,21 @@ void app_request_new_image( App* app )
     DictionaryIterator* message;
     
     {
-        AppMessageResult result = app_message_outbox_begin( &message );
+        const AppMessageResult result = app_message_outbox_begin( &message );
         if ( result != APP_MSG_OK )
             APP_LOG( APP_LOG_LEVEL_ERROR, "result = %d", (int)result );
         GUARD( result == APP_MSG_OK );
     }
     
     {
-        DictionaryResult result = dict_write_data( message, MESSAGE_KEY_RequestNewImage, NULL, 0 );
+        const DictionaryResult result = dict_write_data( message, MESSAGE_KEY_REQUEST_NEW_IMAGE, NULL, 0 );
         if ( result != DICT_OK )
             APP_LOG( APP_LOG_LEVEL_ERROR, "result = %d", (int)result );
         GUARD( result == DICT_OK );
     }
     
     {
-        AppMessageResult result = app_message_outbox_send();
+        const AppMessageResult result = app_message_outbox_send();
         if ( result != APP_MSG_OK )
             APP_LOG( APP_LOG_LEVEL_ERROR, "result = %d", (int)result );
         GUARD( result == APP_MSG_OK );

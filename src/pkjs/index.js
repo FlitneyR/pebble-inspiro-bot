@@ -1,17 +1,16 @@
+const MAX_MESSAGE_SIZE = 8000;
 
 Pebble.addEventListener( 'ready', function() {
-    setTimeout( () => {
-        console.log( 'JSReady' );
-        var dict = { 'JSReady': true };
-        Pebble.sendAppMessage( dict, function( e ) {}, function( e ) {} );
-    }, 3000 );
+    console.log( 'JSReady' );
+    var dict = { 'JS_READY': true };
+    Pebble.sendAppMessage( dict, function( e ) {}, function( e ) {} );
 } );
 
 Pebble.addEventListener( 'appmessage', function( e ) {
     var dict = e.payload;
     console.log( 'Received message: ' + dict );
     
-    if ( "RequestNewImage" in dict )
+    if ( dict[ 'REQUEST_NEW_IMAGE' ] )
     {
         sendNewImageRequest();
     }
@@ -32,4 +31,20 @@ function getImageData( url ) {
     request.onLoad = function() { console.log( this.response ) };
     request.open( 'GET', url );
     request.send();
+}
+
+function sendImage( width, height, data ) {
+    var dict = {
+        'IMAGE_WIDTH': width,
+        'IMAGE_HEIGHT': height,
+        'IMAGE_DATA_SIZE': data.length
+    };
+    
+    Pebble.sendAppMessage( dict, function( e ) {}, function( e ) {} );
+    
+    for ( var offset = 0; offset < MAX_MESSAGE_SIZE; offset += MAX_MESSAGE_SIZE )
+    {
+        var dict = { 'IMAGE_DATA_PART': data.slice( offset, MAX_MESSAGE_SIZE ) };
+        Pebble.sendAppMessage( dict, function( e ) {}, function( e ) {});
+    }
 }

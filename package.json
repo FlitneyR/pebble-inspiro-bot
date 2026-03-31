@@ -1,18 +1,20 @@
 {
     "author": "robert.ogflitney@gmail.com",
-    "dependencies": {},
+    "dependencies": {
+        "sharp": "^0.34.5"
+    },
     "keywords": [],
     "name": "inspiro-bot",
     "pebble": {
         "displayName": "inspiro-bot",
         "enableMultiJS": true,
         "messageKeys": [
-            "ImageDataSize",
-            "ImageDataPart",
-            "BitmapWidth",
-            "BitmapHeight",
-            "RequestNewImage",
-            "JSReady"
+            "IMAGE_DATA_SIZE",
+            "IMAGE_DATA_CHUNK",
+            "IMAGE_WIDTH",
+            "IMAGE_HEIGHT",
+            "REQUEST_NEW_IMAGE",
+            "JS_READY"
         ],
         "projectType": "native",
         "resources": {
